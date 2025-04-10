@@ -1,30 +1,69 @@
-vim.g.python3_host_prog = "/home/user/.venvs/nvim/bin/python3"
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_ruby_provider = 0
+--vim.g.loaded_python3_provider = 0
+vim.g.python3_host_prog = "C:\\Users\\mail\\scoop\\apps\\python\\current\\python.exe"
+
 if vim.g.vscode then
-  -- VSCode Neovim
-  require "vscode_keymaps"
+  ------------------
+  ---VSCode Neovim--
+  ------------------
+  local keymap = vim.keymap.set
+  local opts = { noremap = true, silent = true }
+
+  -- remap leader key
+  keymap("n", "<Space>", "", opts)
+  vim.g.mapleader = " "
+  vim.g.maplocalleader = " "
+
+  -- better indent handling
+  keymap("v", "<", "<gv", opts)
+  keymap("v", ">", ">gv", opts)
+
+  -- move text up and down
+  keymap("v", "J", ":m .+1<CR>==", opts)
+  keymap("v", "K", ":m .-2<CR>==", opts)
+  keymap("x", "J", ":move '>+1<CR>gv-gv", opts)
+  keymap("x", "K", ":move '<-2<CR>gv-gv", opts)
+
+  -- removes highlighting after escaping vim search
+  keymap("n", "<Esc>", "<Esc>:noh<CR>", opts)
+
+  -- call vscode commands from neovim
+
+  -- general keymaps
+  keymap({"n", "v"}, "<leader>t", "<cmd>lua require('vscode').action('workbench.action.terminal.toggleTerminal')<CR>")
+  keymap({"n", "v"}, "<leader>b", "<cmd>lua require('vscode').action('editor.debug.action.toggleBreakpoint')<CR>")
+  keymap({"n", "v"}, "<leader>d", "<cmd>lua require('vscode').action('editor.action.showHover')<CR>")
+  keymap({"n", "v"}, "<leader>a", "<cmd>lua require('vscode').action('editor.action.quickFix')<CR>")
+  keymap({"n", "v"}, "<leader>sp", "<cmd>lua require('vscode').action('workbench.actions.view.problems')<CR>")
+  keymap({"n", "v"}, "<leader>cn", "<cmd>lua require('vscode').action('notifications.clearAll')<CR>")
+  keymap({"n", "v"}, "<leader>ff", "<cmd>lua require('vscode').action('workbench.action.quickOpen')<CR>")
+  keymap({"n", "v"}, "<leader>cp", "<cmd>lua require('vscode').action('workbench.action.showCommands')<CR>")
+  keymap({"n", "v"}, "<leader>pr", "<cmd>lua require('vscode').action('code-runner.run')<CR>")
+  keymap({"n", "v"}, "<leader>fd", "<cmd>lua require('vscode').action('editor.action.formatDocument')<CR>")
+
+  -- harpoon keymaps
+  keymap({"n", "v"}, "<leader>ha", "<cmd>lua require('vscode').action('vscode-harpoon.addEditor')<CR>")
+  keymap({"n", "v"}, "<leader>ho", "<cmd>lua require('vscode').action('vscode-harpoon.editorQuickPick')<CR>")
+  keymap({"n", "v"}, "<leader>he", "<cmd>lua require('vscode').action('vscode-harpoon.editEditors')<CR>")
+  keymap({"n", "v"}, "<leader>h1", "<cmd>lua require('vscode').action('vscode-harpoon.gotoEditor1')<CR>")
+  keymap({"n", "v"}, "<leader>h2", "<cmd>lua require('vscode').action('vscode-harpoon.gotoEditor2')<CR>")
+  keymap({"n", "v"}, "<leader>h3", "<cmd>lua require('vscode').action('vscode-harpoon.gotoEditor3')<CR>")
+  keymap({"n", "v"}, "<leader>h4", "<cmd>lua require('vscode').action('vscode-harpoon.gotoEditor4')<CR>")
+  keymap({"n", "v"}, "<leader>h5", "<cmd>lua require('vscode').action('vscode-harpoon.gotoEditor5')<CR>")
+  keymap({"n", "v"}, "<leader>h6", "<cmd>lua require('vscode').action('vscode-harpoon.gotoEditor6')<CR>")
+  keymap({"n", "v"}, "<leader>h7", "<cmd>lua require('vscode').action('vscode-harpoon.gotoEditor7')<CR>")
+  keymap({"n", "v"}, "<leader>h8", "<cmd>lua require('vscode').action('vscode-harpoon.gotoEditor8')<CR>")
+  keymap({"n", "v"}, "<leader>h9", "<cmd>lua require('vscode').action('vscode-harpoon.gotoEditor9')<CR>")
+
+  -----------------------
+  -- VSCode Neovim End --
+  -----------------------
+
 else
-  -- Ordinary Neovim
-  -- Bootstrap lazy.nvim
-  local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-  if not (vim.uv or vim.loop).fs_stat(lazypath) then
-    local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-    local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
-    if vim.v.shell_error ~= 0 then
-      vim.api.nvim_echo({
-        { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-        { out, "WarningMsg" },
-        { "\nPress any key to exit..." },
-      }, true, {})
-      vim.fn.getchar()
-      os.exit(1)
-    end
-  end
-  vim.opt.rtp:prepend(lazypath)
-
-  -- Make sure to setup `mapleader` and `maplocalleader` before
-  -- loading lazy.nvim so that mappings are correct.
-  -- This is also a good place to setup other settings (vim.opt)
-
+  --------------------
+  -- Default Neovim --
+  --------------------
   -- leader key
   vim.g.mapleader = " "
   vim.g.maplocalleader = " "
@@ -58,6 +97,9 @@ else
   vim.opt.splitbelow = true
   vim.opt.virtualedit = "block"
   vim.cmd("syntax on")
+  --vim.api.nvim_set_hl(0, "normal", { bg = "none" })
+  --vim.api.nvim_set_hl(0, "nontext", { bg = "none" })
+  vim.cmd("colorscheme base16-black-metal-gorgoroth")
 
   -- basic keymaps
   vim.keymap.set("n", "<leader>nh", ":nohl<CR>", { desc = "Clear search highlights" })
@@ -103,23 +145,7 @@ else
       vim.opt_local.softtabstop = 2
     end,
   })
-
-  -- Setup lazy.nvim
-  require("lazy").setup({
-    spec = {
-      -- add your plugins here
-      -- plugins end here
-    },
-    -- Configure any other settings here. See the documentation for more details.
-    -- colorscheme that will be used when installing plugins.
-    install = { colorscheme = { "base16-black-metal-gorgoroth" } },
-    -- automatically check for plugin updates
-    checker = { enabled = true },
-  })
-  -- Ordinary Neovim End
+  ------------------------
+  -- Default Neovim End --
+  ------------------------
 end
-
-
-vim.api.nvim_set_hl(0, "normal", { bg = "none" })
-vim.api.nvim_set_hl(0, "nontext", { bg = "none" })
-vim.cmd("colorscheme base16-black-metal-gorgoroth")
