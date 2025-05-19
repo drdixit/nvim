@@ -1,14 +1,108 @@
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
 vim.g.loaded_python3_provider = 0
+
 vim.opt.termguicolors = true
 vim.g.have_nerd_font = true
 vim.opt.background = "dark"
-vim.cmd("colorscheme base16-black-metal-gorgoroth")
---vim.api.nvim_set_hl(0, "Normal", {bg = "NONE"})
---vim.api.nvim_set_hl(0, "normal", { bg = "none" })
---vim.api.nvim_set_hl(0, "nontext", { bg = "none" })
+vim.cmd("colorscheme retrobox")
+--vim.api.nvim_set_hl(0, "Comment", { italic = true })
+--vim.api.nvim_set_hl(0, "Pmenu", { bg = "#1A1A1A" })
 
+
+
+-- vim.cmd("colorscheme base16-black-metal-gorgoroth")
+--vim.api.nvim_set_hl(0, "Normal", {bg = "NONE"})
+--vim.api.nvim_set_hl(0, "NonText", {bg = "NONE"})
+--highlight PmenuSel guifg=#07080D guibg=#FFFFFF
+--highlight Pmenu guifg=#AAAAAA guibg=#222222
+-- vim.api.nvim_set_hl(0, "PmenuSel", { fg = "#FFFFFF", bg = "#07080D" })
+-- vim.api.nvim_set_hl(0, "Pmenu", { fg = "#AAAAAA", bg = "#07080D" })
+
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+
+vim.opt.updatetime = 50
+vim.opt.guicursor = ""
+vim.opt.mouse = ""
+vim.opt.wrap = false
+vim.opt.number = true
+vim.opt.relativenumber = true
+vim.opt.scrolloff = 10
+vim.opt.signcolumn = "yes:2"
+--vim.opt.colorcolumn = "80"
+vim.opt.splitright = true
+vim.opt.splitbelow = true
+vim.opt.backspace = "indent,eol,start"
+vim.opt.virtualedit = "block"
+vim.opt.inccommand = "split"
+vim.opt.confirm = true
+
+vim.opt.incsearch = true
+vim.opt.ignorecase = true
+vim.opt.smartcase = true
+
+vim.opt.swapfile = false
+vim.opt.backup = false
+vim.opt.undofile = true
+vim.opt.undodir = os.getenv("HOME") .. "/.nvim/undodir"
+
+vim.opt.expandtab = true -- Convert tabs to spaces
+vim.opt.shiftwidth = 4 -- Amount to indent with << and >>
+vim.opt.tabstop = 4 -- How many spaces are shown per Tab
+vim.opt.softtabstop = 4 -- How many spaces are applied when pressing Tab
+vim.opt.list = true
+vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
+
+vim.opt.autoindent = false
+vim.opt.smartindent = false
+vim.opt.cindent = false
+vim.cmd("filetype indent off")
+
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
+vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+
+-- vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
+-- vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
+-- vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
+-- vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+-- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
+-- vim.keymap.set("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the right" })
+-- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
+-- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
+
+-- keymap.set("n", "<leader>+", "<C-a>", { desc = "Increment number" }) -- increment
+-- keymap.set("n", "<leader>-", "<C-x>", { desc = "Decrement number" }) -- decrement
+
+-- keymap.set("n", "<leader>sv", "<C-w>v", { desc = "Split window vertically" }) -- split window vertically
+-- keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" }) -- split window horizontally
+-- keymap.set("n", "<leader>se", "<C-w>=", { desc = "Make splits equal size" }) -- make split windows equal width & height
+-- keymap.set("n", "<leader>sx", "<cmd>close<CR>", { desc = "Close current split" }) -- close current split window
+
+-- keymap.set("n", "<leader>to", "<cmd>tabnew<CR>", { desc = "Open new tab" }) -- open new tab
+-- keymap.set("n", "<leader>tx", "<cmd>tabclose<CR>", { desc = "Close current tab" }) -- close current tab
+-- keymap.set("n", "<leader>tn", "<cmd>tabn<CR>", { desc = "Go to next tab" }) --  go to next tab
+-- keymap.set("n", "<leader>tp", "<cmd>tabp<CR>", { desc = "Go to previous tab" }) --  go to previous tab
+-- keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Open current buffer in new tab" }) --  move current buffer to new tab
+
+vim.api.nvim_create_autocmd('TextYankPost', {
+  desc = 'Highlight when yanking (copying) text',
+  group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
+  callback = function()
+    vim.hl.on_yank()
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "lua", "javascript", "typescript", "javascriptreact", "typescriptreact", "html", "css", "bash", "toml", "xml", "ini" }, -- 2 spaces languages
+  callback = function()
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.tabstop = 2
+    vim.opt_local.softtabstop = 2
+  end,
+})
+
+-- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   local lazyrepo = "https://github.com/folke/lazy.nvim.git"
@@ -24,86 +118,6 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
   end
 end
 vim.opt.rtp:prepend(lazypath)
-
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
-
-vim.opt.updatetime = 50
-vim.opt.guicursor = ""
-vim.opt.mouse = ""
-vim.opt.wrap = false
-vim.opt.number = true
-vim.opt.relativenumber = true
-vim.opt.scrolloff = 10
-vim.opt.cursorline = true
-vim.opt.signcolumn = "yes"
-vim.opt.colorcolumn = "80"
-vim.opt.splitright = true
-vim.opt.splitbelow = true
-
-vim.opt.swapfile = false
-vim.opt.backup = false
-vim.opt.undofile = true
-vim.opt.undodir = os.getenv("HOME") .. "/.nvim/undodir"
-
-vim.opt.incsearch = true
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
-
-vim.opt.expandtab = true -- Convert tabs to spaces
-vim.opt.shiftwidth = 4 -- Amount to indent with << and >>
-vim.opt.tabstop = 4 -- How many spaces are shown per Tab
-vim.opt.softtabstop = 4 -- How many spaces are applied when pressing Tab
-
---vim.opt.smarttab = true
---vim.opt.smartindent = true
---vim.opt.autoindent = true -- Keep identation from previous line
-vim.opt.breakindent = true
-
-vim.opt.list = true
-vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
-
-vim.opt.backspace = "indent,eol,start"
-vim.opt.virtualedit = "block"
-vim.opt.inccommand = "split"
-vim.opt.confirm = true
-
-vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
-vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
-
---vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
---vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
---vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
---vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
---vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
---vim.keymap.set("n", "<C-S-l>", "<C-w>L", { desc = "Move window to the right" })
---vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
---vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
-
-vim.api.nvim_create_autocmd('TextYankPost', {
-  desc = 'Highlight when yanking (copying) text',
-  group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
-  callback = function()
-    vim.highlight.on_yank()
-  end,
-})
-
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "python", "java", "c", "cpp", "php", "yaml", "json", "lua", "sh" }, -- 4 spaces languages
-  callback = function()
-    vim.opt_local.shiftwidth = 4
-    vim.opt_local.tabstop = 4
-    vim.opt_local.softtabstop = 4
-  end,
-})
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "javascript", "typescript", "javascriptreact", "typescriptreact", "html", "css", "bash", "toml", "xml", "ini" }, -- 2 spaces languages
-  callback = function()
-    vim.opt_local.shiftwidth = 2
-    vim.opt_local.tabstop = 2
-    vim.opt_local.softtabstop = 2
-  end,
-})
 
 require("lazy").setup({
   spec = {
@@ -174,34 +188,27 @@ require("lazy").setup({
       version = "1.*",
       opts = {
         keymap = { preset = "default" },
-        appearance = { nerd_font_variant = "mono" },
-        completion = { documentation = { auto_show = true } },
+        appearance = {
+          nerd_font_variant = "mono"
+        },
+        completion = { documentation = { auto_show = false } },
         sources = {
-          default = { "lazydev", "lsp", "path", "snippets", "buffer" },
-          providers = {
-            lazydev = {
-              name = "LazyDev",
-              module = "lazydev.integrations.blink",
-              score_offset = 100,
-            }
-          }
+          default = { "lsp", "path", "snippets", "buffer" },
         },
         fuzzy = { implementation = "prefer_rust_with_warning" }
       },
       opts_extend = { "sources.default" }
-    },
-    {
-      "folke/lazydev.nvim",
-      ft = "lua",
-      opts = {
-        library = {
-          { path = "${3rd}/luv/library", words = { "vim%.uv" } },
-        },
-      },
-    },
+    }
     -----------------
     -- PLUGINS END --
     -----------------
   },
-  install = { colorscheme = { "base16-black-metal-gorgoroth" } },
-  checker = { enabled = true }, })
+  install = { colorscheme = { "retrobox" } },
+  checker = { enabled = true },
+  ui = {
+    size = { width = 0.85, height = 0.75 },
+    border = "solid",
+    backdrop = 10,
+  },
+})
+
