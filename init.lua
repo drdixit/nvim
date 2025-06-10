@@ -131,7 +131,7 @@ require("lazy").setup({
 
         require("tokyonight").setup({
           terminal_colors = false,
-          transparent = true,
+          transparent = false,
           style = "night",
           on_colors = function(colors)
             colors.bg = bg
@@ -328,7 +328,7 @@ require("lazy").setup({
 --- LSP CONFIG ---
 ------------------
 
-vim.lsp.config["luals"] = {
+vim.lsp.config["lua-language-server"] = {
   cmd = { "lua-language-server" },
   filetypes = { "lua" },
   root_markers = { ".luarc.json", ".luarc.jsonc", ".git" },
@@ -344,7 +344,86 @@ vim.lsp.config["luals"] = {
   }
 }
 
-vim.lsp.enable({ "luals" })
+vim.lsp.config["css-lsp"] = {
+  cmd = { "vscode-css-language-server", "--stdio" },
+  filetypes = { "css", "scss", "less" },
+  init_options = { provideFormatter = true }, -- needed to enable formatting capabilities
+  root_markers = { "package.json", ".git" },
+  single_file_support = true,
+  settings = {
+    css = { validate = true },
+    scss = { validate = true },
+    less = { validate = true },
+  },
+}
+
+vim.lsp.config["html-lsp"] = {
+  cmd = { "vscode-html-language-server", "--stdio" },
+  filetypes = { "html", "templ" },
+  root_markers = { "package.json", ".git" },
+  single_file_support = true,
+  settings = {},
+  init_options = {
+    provideFormatter = true,
+    embeddedLanguages = { css = true, javascript = true },
+    configurationSection = { "html", "css", "javascript" },
+  },
+}
+
+vim.lsp.config["emmet-language-server"] = {
+  cmd = { "emmet-language-server", "--stdio" },
+  filetypes = {
+    "css",
+    "eruby",
+    "html",
+    "htmldjango",
+    "javascript",
+    "javascriptreact",
+    "less",
+    "pug",
+    "sass",
+    "scss",
+    "typescriptreact",
+    "htmlangular",
+  },
+  root_markers = { "package.json", ".git" },
+  single_file_support = true,
+}
+
+vim.lsp.config["typescript-language-server"] = {
+  init_options = { hostInfo = "neovim" },
+  cmd = { "typescript-language-server", "--stdio" },
+  filetypes = {
+    "javascript",
+    "javascriptreact",
+    "javascript.jsx",
+    "typescript",
+    "typescriptreact",
+    "typescript.tsx",
+  },
+  root_markers = {
+    "tsconfig.json",
+    "jsconfig.json",
+    "package.json",
+    ".git"
+  },
+  single_file_support = true,
+}
+
+vim.lsp.config["phpactor"] = {
+  cmd = { "phpactor", "language-server" },
+  filetypes = { "php" },
+  root_markers = { "composer.json", ".git", ".phpactor.json", ".phpactor.yml" }
+}
+
+vim.lsp.enable({
+  "lua-language-server",
+  "css-lsp",
+  "html-lsp",
+  "emmet-language-server",
+  "typescript-language-server",
+  "phpactor"
+})
 
 -- builtin autocomplete
 -- vim.api.nvim_create_autocmd('LspAttach', {
@@ -379,3 +458,4 @@ vim.diagnostic.config({
     },
   },
 })
+
