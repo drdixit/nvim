@@ -1,30 +1,33 @@
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
 vim.g.loaded_python3_provider = 0
+vim.g.have_nerd_font = true
+vim.opt.termguicolors = true
+vim.opt.background = "dark"
+vim.cmd("colorscheme retrobox")
+vim.api.nvim_set_hl(0, "Normal", { fg = vim.api.nvim_get_hl(0, {name = "Normal"}).fg, bg = "#1d2021" })
+vim.cmd.highlight("SignColumn guibg=NONE")
 
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
-vim.opt.termguicolors = true
-vim.opt.background = "dark"
-vim.g.have_nerd_font = true
-
-vim.opt.mouse = ""
+vim.opt.updatetime = 200
+vim.opt.timeoutlen = 300
 vim.opt.guicursor = ""
+vim.opt.mouse = ""
 vim.opt.wrap = false
-vim.opt.relativenumber = true
 vim.opt.number = true
+vim.opt.relativenumber = true
 vim.opt.scrolloff = 10
-vim.opt.cursorline = true
 vim.opt.signcolumn = "yes:2"
---vim.opt.colorcolumn = "80"
+-- vim.opt.colorcolumn = "80"
 vim.opt.splitright = true
 vim.opt.splitbelow = true
-vim.opt.backspace = "indent,eol,start" -- allow backspace on indent, end of line or insert mode start position
+vim.opt.splitkeep = "screen"
+vim.opt.backspace = "indent,eol,start"
 vim.opt.virtualedit = "block"
 vim.opt.inccommand = "split"
--- vim.opt.confirm = true
--- vim.opt.clipboard:append("unnamedplus") -- use system clipboard as default register
+vim.opt.confirm = true
 
 vim.opt.incsearch = true
 vim.opt.ignorecase = true
@@ -42,17 +45,16 @@ vim.opt.softtabstop = 4 -- How many spaces are applied when pressing Tab
 vim.opt.list = true
 vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 
--- because this sometimes messup with treesitter indentation
-vim.opt.autoindent = false
+vim.opt.autoindent = true
 vim.opt.smartindent = false
 vim.opt.cindent = false
-vim.cmd("filetype indent off")
+-- vim.cmd("filetype indent off")
+-- or
+vim.opt.filetype = "on"
+vim.opt.filetype.indent = "off"  -- Lua way (if supported)
 
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
-
--- delete single character without copying into register
--- keymap.set("n", "x", '"_x')
 
 -- vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
 -- vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
@@ -77,9 +79,9 @@ vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" }
 -- keymap.set("n", "<leader>tp", "<cmd>tabp<CR>", { desc = "Go to previous tab" }) --  go to previous tab
 -- keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Open current buffer in new tab" }) --  move current buffer to new tab
 
-vim.api.nvim_create_autocmd("TextYankPost", {
-  desc = "Highlight when yanking (copying) text",
-  group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
+vim.api.nvim_create_autocmd('TextYankPost', {
+  desc = 'Highlight when yanking (copying) text',
+  group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
   callback = function()
     vim.hl.on_yank()
   end,
@@ -111,57 +113,22 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- Make sure to setup `mapleader` and `maplocalleader` before
+-- loading lazy.nvim so that mappings are correct.
+-- This is also a good place to setup other settings (vim.opt)
+-- vim.g.mapleader = " "
+-- vim.g.maplocalleader = "\\"
+
 -- Setup lazy.nvim
 require("lazy").setup({
   spec = {
     -- add your plugins here
     {
-      "folke/tokyonight.nvim",
-      priority = 1000, -- make sure to load this before all the other start plugins
-      config = function()
-        local bg = "#011628"
-        local bg_dark = "#011423"
-        local bg_highlight = "#143652"
-        local bg_search = "#0A64AC"
-        local bg_visual = "#275378"
-        local fg = "#CBE0F0"
-        local fg_dark = "#B4D0E9"
-        local fg_gutter = "#627E97"
-        local border = "#547998"
-
-        require("tokyonight").setup({
-          terminal_colors = false,
-          transparent = false,
-          style = "night",
-          on_colors = function(colors)
-            colors.bg = bg
-            colors.bg_dark = bg_dark
-            colors.bg_float = bg_dark
-            colors.bg_highlight = bg_highlight
-            colors.bg_popup = bg_dark
-            colors.bg_search = bg_search
-            colors.bg_sidebar = bg_dark
-            colors.bg_statusline = bg_dark
-            colors.bg_visual = bg_visual
-            colors.border = border
-            colors.fg = fg
-            colors.fg_dark = fg_dark
-            colors.fg_float = fg
-            colors.fg_gutter = fg_gutter
-            colors.fg_sidebar = fg_dark
-          end,
-        })
-        -- load the colorscheme here
-        vim.cmd([[colorscheme tokyonight]])
-      end,
-    },
-
-    {
       "nvim-treesitter/nvim-treesitter-textobjects",
       dependencies = { "nvim-treesitter/nvim-treesitter" },
       config = function()
         require("nvim-treesitter.configs").setup({
-          ensure_installed = { "bash", "c", "diff", "html", "lua", "luadoc", "markdown", "markdown_inline", "query", "vim", "vimdoc" },
+          ensure_installed = { "php", "bash", "c", "diff", "html", "lua", "luadoc", "markdown", "markdown_inline", "query", "vim", "vimdoc" },
           auto_install = true,
           highlight = { enable = true, },
           indent = { enable = true },
@@ -207,255 +174,21 @@ require("lazy").setup({
     },
 
     {
-      "nvim-lualine/lualine.nvim",
+      "ibhagwan/fzf-lua",
+      -- optional for icon support
       dependencies = { "nvim-tree/nvim-web-devicons" },
-      config = function()
-        local lualine = require("lualine")
-        local lazy_status = require("lazy.status") -- to configure lazy pending updates count
-
-        local colors = {
-          blue = "#65D1FF",
-          green = "#3EFFDC",
-          violet = "#FF61EF",
-          yellow = "#FFDA7B",
-          red = "#FF4A4A",
-          fg = "#c3ccdc",
-          bg = "#112638",
-          inactive_bg = "#2c3043",
-        }
-
-        local my_lualine_theme = {
-          normal = {
-            a = { bg = colors.blue, fg = colors.bg, gui = "bold" },
-            b = { bg = colors.bg, fg = colors.fg },
-            c = { bg = colors.bg, fg = colors.fg },
-          },
-          insert = {
-            a = { bg = colors.green, fg = colors.bg, gui = "bold" },
-            b = { bg = colors.bg, fg = colors.fg },
-            c = { bg = colors.bg, fg = colors.fg },
-          },
-          visual = {
-            a = { bg = colors.violet, fg = colors.bg, gui = "bold" },
-            b = { bg = colors.bg, fg = colors.fg },
-            c = { bg = colors.bg, fg = colors.fg },
-          },
-          command = {
-            a = { bg = colors.yellow, fg = colors.bg, gui = "bold" },
-            b = { bg = colors.bg, fg = colors.fg },
-            c = { bg = colors.bg, fg = colors.fg },
-          },
-          replace = {
-            a = { bg = colors.red, fg = colors.bg, gui = "bold" },
-            b = { bg = colors.bg, fg = colors.fg },
-            c = { bg = colors.bg, fg = colors.fg },
-          },
-          inactive = {
-            a = { bg = colors.inactive_bg, fg = colors.semilightgray, gui = "bold" },
-            b = { bg = colors.inactive_bg, fg = colors.semilightgray },
-            c = { bg = colors.inactive_bg, fg = colors.semilightgray },
-          },
-        }
-
-        -- configure lualine with modified theme
-        lualine.setup({
-          options = {
-            theme = my_lualine_theme,
-          },
-          sections = {
-            lualine_x = {
-              {
-                lazy_status.updates,
-                cond = lazy_status.has_updates,
-                color = { fg = "#ff9e64" },
-              },
-              { "encoding" },
-              { "fileformat" },
-              { "filetype" },
-            },
-          },
-        })
-      end,
-    },
-
-    {
-      "mason-org/mason.nvim",
-      opts = {
-        ui = {
-          icons = {
-            package_installed = "✓",
-            package_pending = "➜",
-            package_uninstalled = "✗"
-          }
-        }
-      }
-    },
-
-    {
-      "saghen/blink.cmp",
-      dependencies = { "rafamadriz/friendly-snippets" },
-      version = "1.*",
-      opts = {
-        keymap = { preset = "default" },
-        appearance = {
-          nerd_font_variant = "mono"
-        },
-        completion = {
-          menu = { border = "bold" },
-          documentation = { auto_show = true, window = { border = "bold" } }
-        },
-        signature = { enabled = true, window = { border = "bold" } },
-        sources = {
-          default = { "lsp", "path", "snippets", "buffer" },
-        },
-        fuzzy = { implementation = "prefer_rust_with_warning" }
-      },
-      opts_extend = { "sources.default" }
-    },
-
+      -- or if using mini.icons/mini.nvim
+      -- dependencies = { "echasnovski/mini.icons" },
+      opts = {}
+    }
     -- plugins end
   },
-  install = { colorscheme = { "tokyonight" } },
+  install = { colorscheme = { "retrobox" } },
   checker = { enabled = true },
   ui = {
     size = { width = 0.85, height = 0.75 },
     border = "solid",
     backdrop = 10,
-  },
-})
-
-------------------
---- LSP CONFIG ---
-------------------
-
-vim.lsp.config["lua-language-server"] = {
-  cmd = { "lua-language-server" },
-  filetypes = { "lua" },
-  root_markers = { ".luarc.json", ".luarc.jsonc", ".git" },
-  settings = {
-    Lua = {
-      runtime = {
-        version = "LuaJIT",
-      },
-      diagnostics = {
-        globals = { "vim" },
-      },
-    }
-  }
-}
-
-vim.lsp.config["css-lsp"] = {
-  cmd = { "vscode-css-language-server", "--stdio" },
-  filetypes = { "css", "scss", "less" },
-  init_options = { provideFormatter = true }, -- needed to enable formatting capabilities
-  root_markers = { "package.json", ".git" },
-  single_file_support = true,
-  settings = {
-    css = { validate = true },
-    scss = { validate = true },
-    less = { validate = true },
-  },
-}
-
-vim.lsp.config["html-lsp"] = {
-  cmd = { "vscode-html-language-server", "--stdio" },
-  filetypes = { "html", "templ" },
-  root_markers = { "package.json", ".git" },
-  single_file_support = true,
-  settings = {},
-  init_options = {
-    provideFormatter = true,
-    embeddedLanguages = { css = true, javascript = true },
-    configurationSection = { "html", "css", "javascript" },
-  },
-}
-
-vim.lsp.config["emmet-language-server"] = {
-  cmd = { "emmet-language-server", "--stdio" },
-  filetypes = {
-    "css",
-    "eruby",
-    "html",
-    "htmldjango",
-    "javascript",
-    "javascriptreact",
-    "less",
-    "pug",
-    "sass",
-    "scss",
-    "typescriptreact",
-    "htmlangular",
-  },
-  root_markers = { "package.json", ".git" },
-  single_file_support = true,
-}
-
-vim.lsp.config["typescript-language-server"] = {
-  init_options = { hostInfo = "neovim" },
-  cmd = { "typescript-language-server", "--stdio" },
-  filetypes = {
-    "javascript",
-    "javascriptreact",
-    "javascript.jsx",
-    "typescript",
-    "typescriptreact",
-    "typescript.tsx",
-  },
-  root_markers = {
-    "tsconfig.json",
-    "jsconfig.json",
-    "package.json",
-    ".git"
-  },
-  single_file_support = true,
-}
-
-vim.lsp.config["phpactor"] = {
-  cmd = { "phpactor", "language-server" },
-  filetypes = { "php" },
-  root_markers = { "composer.json", ".git", ".phpactor.json", ".phpactor.yml" }
-}
-
-vim.lsp.enable({
-  "lua-language-server",
-  "css-lsp",
-  "html-lsp",
-  "emmet-language-server",
-  "typescript-language-server",
-  "phpactor"
-})
-
--- builtin autocomplete
--- vim.api.nvim_create_autocmd('LspAttach', {
---   callback = function(ev)
---     local client = vim.lsp.get_client_by_id(ev.data.client_id)
---     if client:supports_method('textDocument/completion') then
---       vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
---     end
---   end,
--- })
-
-vim.diagnostic.config({
-  -- virtual_lines = true,
-  virtual_text = true,
-  underline = true,
-  update_in_insert = false,
-  severity_sort = true,
-  float = {
-    border = "rounded",
-    source = true,
-  },
-  signs = {
-    text = {
-      [vim.diagnostic.severity.ERROR] = "󰅚 ",
-      [vim.diagnostic.severity.WARN] = "󰀪 ",
-      [vim.diagnostic.severity.INFO] = "󰋽 ",
-      [vim.diagnostic.severity.HINT] = "󰌶 ",
-    },
-    numhl = {
-      [vim.diagnostic.severity.ERROR] = "ErrorMsg",
-      [vim.diagnostic.severity.WARN] = "WarningMsg",
-    },
   },
 })
 
