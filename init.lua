@@ -8,8 +8,6 @@ vim.opt.compatible = false -- turn off vi compatibility mode
 vim.opt.fileencoding = "utf-8" -- encoding set to utf-8
 vim.opt.termguicolors = true -- enable true colors in the terminal
 vim.opt.background = "dark" -- use dark background
-vim.cmd("colorscheme retrobox") -- set colorscheme
-vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#3c3836" })
 vim.opt.mouse = "" -- disable mouse support
 vim.opt.guicursor = "" -- block cursor in all modes
 vim.opt.number = true -- turn on line numbers
@@ -79,6 +77,7 @@ vim.api.nvim_create_autocmd("FileType", {
     "toml",
     "xml",
     "ini",
+    "dart"
   },
   callback = function()
     vim.opt_local.shiftwidth = 2
@@ -87,7 +86,7 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
-vim.opt.completeopt = { "menuone", "noselect" } -- always show completion menu, but don"t auto-select items
+-- vim.opt.completeopt = { "menuone", "noselect" } -- always show completion menu, but don"t auto-select items
 
 -- highlight when yanking text
 vim.api.nvim_create_autocmd("TextYankPost", {
@@ -108,95 +107,65 @@ vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Move up half a page and keep c
 
 vim.keymap.set("n", "<leader>e", ":25Lexplor<CR>", { desc = "Open Netrw in 25% vertical split (tree view)" })
 
-vim.pack.add({
-  { src="https://github.com/nvim-treesitter/nvim-treesitter", version="master" },
-})
+vim.pack.add({ "https://github.com/nvim-tree/nvim-web-devicons.git" })
+require('plugins.tokyonight')
+require('plugins.treesitter')
 
-vim.pack.add({ "https://github.com/nvim-treesitter/nvim-treesitter-textobjects" })
+vim.lsp.enable("dartls")
 
-require("nvim-treesitter.configs").setup({
-  ensure_installed = {
-    "php",
-    "bash",
-    "c",
-    "diff",
-    "html",
-    "lua",
-    "luadoc",
-    "markdown",
-    "markdown_inline",
-    "query",
-    "vim",
-    "vimdoc",
-    "dart",
-  },
-  auto_install = true,
-  highlight = { enable = true },
-  indent = { enable = true },
-
-  incremental_selection = {
-
-    enable = true,
-    keymaps = {
-
-      init_selection = "<C-space>",
-      node_incremental = "<C-space>",
-      scope_incremental = false,
-      node_decremental = "<bs>",
-    },
-
-  },
-
-  textobjects = {
-    select = {
-      enable = true,
-      lookahead = true,
-
-      keymaps = {
-        ["af"] = "@function.outer",
-        ["if"] = "@function.inner",
-        ["ac"] = "@class.outer",
-        ["ic"] = { query = "@class.inner", desc = "Select inner part of a class region" },
-        ["as"] = {
-          query = "@local.scope",
-          query_group = "locals",
-
-          desc = "Select language scope",
-        },
-      },
-      selection_modes = {
-        ["@parameter.outer"] = "v", -- charwise
-        ["@function.outer"] = "V", -- linewise
-        ["@class.outer"] = "<c-v>", -- blockwise
-      },
-      include_surrounding_whitespace = true,
-    },
-    swap = {
-      enable = true,
-      swap_next = {
-        ["<leader>a"] = "@parameter.inner",
-      },
-      swap_previous = {
-        ["<leader>A"] = "@parameter.inner",
-      },
-    },
-  },
-})
-
-vim.api.nvim_create_autocmd('PackChanged', {
-  desc = 'Handle nvim-treesitter updates',
-  group = vim.api.nvim_create_augroup('nvim-treesitter-pack-changed-update-handler', { clear = true }),
-  callback = function(event)
-    if event.data.kind == 'update' and event.data.spec.name == 'nvim-treesitter' then
-      vim.notify('nvim-treesitter updated, running TSUpdate...', vim.log.levels.INFO)
-      ---@diagnostic disable-next-line: param-type-mismatch
-      local ok = pcall(vim.cmd, 'TSUpdate')
-      if ok then
-        vim.notify('TSUpdate completed successfully!', vim.log.levels.INFO)
-      else
-        vim.notify('TSUpdate command not available yet, skipping', vim.log.levels.WARN)
-      end
-
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(ev)
+    local client = vim.lsp.get_client_by_id(ev.data.client_id)
+    if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_completion) then
+      vim.opt.completeopt = { 'menu', 'menuone', 'noinsert', 'fuzzy', 'popup' }
+      vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
+      vim.keymap.set('i', '<C-Space>', function()
+        vim.lsp.completion.get()
+      end)
     end
   end,
 })
+
+vim.diagnostic.config({
+  update_in_insert = false,
+  severity_sort = true,
+
+  float = { border = "rounded", source = true },
+  underline = { severity = vim.diagnostic.severity.ERROR },
+  signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = "󰅚 ",
+      [vim.diagnostic.severity.WARN] = "󰀪 ",
+      [vim.diagnostic.severity.INFO] = "󰋽 ",
+      [vim.diagnostic.severity.HINT] = "󰌶 ",
+    },
+    numhl = {
+      [vim.diagnostic.severity.ERROR] = "ErrorMsg",
+      [vim.diagnostic.severity.WARN] = "WarningMsg",
+    },
+  },
+
+  virtual_text = {
+    source = true,
+    spacing = 2,
+    format = function(diagnostic)
+      local diagnostic_message = {
+        [vim.diagnostic.severity.ERROR] = diagnostic.message,
+        [vim.diagnostic.severity.WARN] = diagnostic.message,
+        [vim.diagnostic.severity.INFO] = diagnostic.message,
+        [vim.diagnostic.severity.HINT] = diagnostic.message,
+      }
+      return diagnostic_message[diagnostic.severity]
+    end,
+  },
+
+})
+
+vim.keymap.set('n', '<leader>rd', function()
+  local file = vim.fn.expand('%')
+  vim.cmd(':w')
+  vim.cmd('split | terminal dart run ' .. file)
+  vim.cmd('startinsert')
+  -- Auto-resize terminal
+  vim.cmd('resize 15')
+end, { desc = 'Run Dart file' })
