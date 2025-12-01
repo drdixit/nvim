@@ -20,14 +20,15 @@ vim.opt.title = true -- show title
 -- vim.opt.showtabline = 2 -- always show the tab line
 vim.opt.laststatus = 2 -- always show the statusline
 vim.opt.showcmd = true -- show (partial) command in the last line of the screen
-vim.opt.cmdheight = 2 -- height of the command line (number of lines)
+-- vim.opt.cmdheight = 2 -- height of the command line (number of lines)
 vim.opt.showmode = true -- show current mode in command line
-vim.opt.signcolumn = "yes:2" -- always show 2 sign columns
+-- vim.opt.signcolumn = "yes:2" -- always show 2 sign columns
+vim.opt.signcolumn = "yes" -- always show 2 sign columns
 vim.opt.colorcolumn = "80" -- show column at 80 chars
 vim.opt.updatetime = 200 -- faster update time for cursorhold events
 vim.opt.timeoutlen = 300 -- timeout for mapped sequences (ms)
 vim.g.netrw_banner = 0 -- gets rid of the annoying banner for netrw
-vim.g.netrw_browse_split = 4 -- open in prior window
+-- vim.g.netrw_browse_split = 4 -- open in prior window
 vim.g.netrw_altv = 1 -- change from left splitting to right splitting
 vim.g.netrw_liststyle = 3 -- tree style view in netrw
 vim.opt.splitright = true -- vertical splits open to the right
@@ -110,6 +111,9 @@ vim.keymap.set("n", "<leader>e", ":25Lexplor<CR>", { desc = "Open Netrw in 25% v
 vim.pack.add({ "https://github.com/nvim-tree/nvim-web-devicons.git" })
 require('plugins.tokyonight')
 require('plugins.treesitter')
+require('plugins.gitsigns')
+require('plugins.lualine')
+require('plugins.telescope')
 
 vim.lsp.enable("dartls")
 
