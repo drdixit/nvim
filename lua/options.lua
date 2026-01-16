@@ -8,13 +8,6 @@ vim.opt.compatible = false -- turn off vi compatibility mode
 vim.opt.fileencoding = "utf-8" -- encoding set to utf-8
 vim.opt.termguicolors = true -- enable true colors in the terminal
 vim.opt.background = "dark" -- use dark background
--- Transparent background (after colorscheme)
-vim.cmd.colorscheme("lunaperche")
-vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
-vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
-vim.api.nvim_set_hl(0, "NormalNC", { bg = "none" })
-vim.api.nvim_set_hl(0, "SignColumn", { bg = "none" })
-vim.api.nvim_set_hl(0, "LineNr", { bg = "none" })
 vim.opt.mouse = "" -- disable mouse support
 vim.opt.guicursor = "" -- block cursor in all modes
 vim.opt.number = true -- turn on line numbers
@@ -24,20 +17,13 @@ vim.opt.scrolloff = 10 -- keep 10 lines visible above/below cursor
 vim.opt.sidescrolloff = 10 -- keep 5 columns visible left/right of cursor during horizontal scroll
 vim.opt.pumheight = 10 -- max number of items to show in popup menu
 vim.opt.title = true -- show title
--- vim.opt.showtabline = 2 -- always show the tab line
 vim.opt.laststatus = 2 -- always show the statusline
 vim.opt.showcmd = true -- show (partial) command in the last line of the screen
--- vim.opt.cmdheight = 2 -- height of the command line (number of lines)
 vim.opt.showmode = true -- show current mode in command line
--- vim.opt.signcolumn = "yes:2" -- always show 2 sign columns
 vim.opt.signcolumn = "yes" -- always show 2 sign columns
 vim.opt.colorcolumn = "80" -- show column at 80 chars
 vim.opt.updatetime = 200 -- faster update time for cursorhold events
 vim.opt.timeoutlen = 300 -- timeout for mapped sequences (ms)
--- vim.g.netrw_banner = 0 -- gets rid of the annoying banner for netrw
--- vim.g.netrw_browse_split = 4 -- open in prior window
--- vim.g.netrw_altv = 1 -- change from left splitting to right splitting
--- vim.g.netrw_liststyle = 3 -- tree style view in netrw
 vim.opt.splitright = true -- vertical splits open to the right
 vim.opt.splitbelow = true -- horizontal splits open below
 vim.opt.splitkeep = "screen" -- keep text stable when splitting
@@ -53,6 +39,17 @@ vim.opt.backup = false -- disable backup file
 vim.opt.undofile = true -- enable persistent undo
 vim.opt.undodir = os.getenv("HOME") .. "/.nvim/undodir" -- undo directory path
 
+-- TREESITTER SPECIFIC OPTIONS --
+-- Basic indent (Tree-sitter fallback)
+vim.opt.autoindent = true
+-- Disable legacy indent engines (conflict with Tree-sitter)
+vim.opt.smartindent = false
+vim.opt.cindent = false
+-- Filetype handling (Tree-sitter friendly)
+vim.opt.filetype = "on"           -- Detection
+vim.opt.filetype.indent = "off"   -- No legacy indents
+vim.cmd("filetype plugin on")     -- ftplugins (keymaps/options)
+
 -- Indentation
 vim.opt.expandtab = true -- convert tabs to spaces
 vim.opt.shiftwidth = 4 -- indent width for << and >>
@@ -61,41 +58,16 @@ vim.opt.softtabstop = 4 -- tab key inserts 4 spaces
 vim.opt.list = true -- show whitespace characters
 vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" } -- characters for tabs, trailing spaces, NBSP
 
--- vim.opt.autoindent = true
--- vim.opt.smartindent = true
--- vim.cmd("filetype indent on")
--- Indent behavior (we are disabling some things because of treesitter indentation)
--- vim.opt.autoindent = true -- copy indent from current line on new line
--- vim.opt.smartindent = false -- disable smart indent
--- vim.opt.cindent = false -- disable C-style indent
--- vim.cmd("filetype indent off")           -- old way to disable filetype indent
--- vim.opt.filetype.indent = "off"             -- disable filetype-based indent
--- vim.opt.filetype = "on"                     -- enable filetype detection
--- vim.cmd("filetype indent off")
--- vim.cmd("filetype on")
-
 -- 2 spaces languages
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = {
-    "lua",
-    "javascript",
-    "typescript",
-    "javascriptreact",
-    "typescriptreact",
-    "html",
-    "css",
-    "bash",
-    "toml",
-    "xml",
-    "ini",
-    "dart"
-  },
+  pattern = { "lua", "javascript", "typescript", "javascriptreact", "typescriptreact", "html", "css", "bash", "toml", "xml", "ini", "dart" },
   callback = function()
     vim.opt_local.shiftwidth = 2
     vim.opt_local.tabstop = 2
     vim.opt_local.softtabstop = 2
   end,
 })
+
 
 -- highlight when yanking text
 vim.api.nvim_create_autocmd("TextYankPost", {
@@ -111,3 +83,4 @@ vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>") -- clear search highlight wi
 vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 vim.keymap.set("n", "<C-d>", "<C-d>zz", { desc = "Move down half a page and keep cursor in middle" })
 vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "Move up half a page and keep cursor in middle" })
+
