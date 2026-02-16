@@ -72,7 +72,7 @@ vim.diagnostic.config({
 -- Add to init.lua (after diagnostic.config)
 vim.keymap.set('n', '<leader>de', vim.diagnostic.open_float, { desc = 'Diagnostic float' })
 
-require("plugins.conform")
+-- require("plugins.conform")
 
 vim.keymap.set('n', '<leader>rd', function()
   local file = vim.fn.expand('%')
@@ -99,9 +99,3 @@ vim.keymap.set("n", "<leader>tf", "<cmd>tabnew %<CR>", { desc = "Open current bu
 -- vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 -- vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 -- vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
-vim.pack.add({ "https://github.com/christoomey/vim-tmux-navigator.git" })
-vim.keymap.set("n", "<C-h>", "<cmd>TmuxNavigateLeft<cr>", { desc = "Tmux navigate left" })
-vim.keymap.set("n", "<C-j>", "<cmd>TmuxNavigateDown<cr>", { desc = "Tmux navigate down" })
-vim.keymap.set("n", "<C-k>", "<cmd>TmuxNavigateUp<cr>", { desc = "Tmux navigate up" })
-vim.keymap.set("n", "<C-l>", "<cmd>TmuxNavigateRight<cr>", { desc = "Tmux navigate right" })
-vim.keymap.set("n", "<C-\\>", "<cmd>TmuxNavigatePrevious<cr>", { desc = "Tmux navigate previous" })
