@@ -1,4 +1,5 @@
 require('gitsigns').setup({
+  -- sign_priority = 11,  -- higher than LSP's 10, stays on column 1
  --  signs = {
  --    add = { text = '+' },
  --    change = { text = '~' },
@@ -32,16 +33,8 @@ vim.api.nvim_create_autocmd("User", {
 })
 
 function _G.Statusline()
-  local branch = vim.b.gitsigns_head or ""
-  if branch ~= "" then branch = "[" .. branch .. "]" end
-
   local changes = vim.b.gitsigns_status or ""
-
-  local commit = last_commit_cache ~= "" and "[" .. last_commit_cache .. "]" or ""
-
-  local left  = " %f " .. changes
-  local right = branch .. " " .. commit .. " "
-  return left .. "%=" .. right
+  return " %f " .. changes
 end
 
 vim.o.statusline = "%!v:lua.Statusline()"

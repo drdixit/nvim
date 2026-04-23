@@ -20,7 +20,7 @@ vim.opt.title = true -- show title
 vim.opt.laststatus = 2 -- always show the statusline
 vim.opt.showcmd = true -- show (partial) command in the last line of the screen
 vim.opt.showmode = true -- show current mode in command line
-vim.opt.signcolumn = "yes" -- always show 2 sign columns
+vim.opt.signcolumn = "yes:2" -- always show 2 sign columns
 -- vim.opt.colorcolumn = "80" -- show column at 80 chars
 vim.opt.updatetime = 200 -- faster update time for cursorhold events
 vim.opt.timeoutlen = 300 -- timeout for mapped sequences (ms)
@@ -67,5 +67,5 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
-vim.lsp.config('*', { root_markers = { '.git' } })
+vim.o.winborder = "rounded"
 
